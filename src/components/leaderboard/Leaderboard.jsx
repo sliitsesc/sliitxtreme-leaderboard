@@ -1,68 +1,24 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useCallback } from "react";
 import LeaderboardCard from "./LeaderboardCard";
 import Pagination from "../Pagination";
+import useLeaderboardData from "../../Hooks/useLeaderboardData";
 
-const API_URL = import.meta.env.VITE_API_URL;
-const API_PARAMS = import.meta.env.VITE_API_PARAMS;
-const REFRESH_INTERVAL = parseInt(import.meta.env.VITE_REFRESH_INTERVAL, 10);
-const CORS_PROXIES = import.meta.env.VITE_CORS_PROXIES.split(",");
 const ITEMS_PER_PAGE = 10;
 
 const Leaderboard = () => {
-  const [leaderboardData, setLeaderboardData] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const { data, error, isLoading, isValidating } = useLeaderboardData();
 
-  useEffect(() => {
-    const fetchLeaderboardData = async () => {
-      setIsLoading(true);
-      const targetUrl = `${API_URL}?${API_PARAMS}`;
-
-      for (const proxy of CORS_PROXIES) {
-        try {
-          const response = await axios.get(
-            `${proxy}${encodeURIComponent(targetUrl)}`
-          );
-
-          const data = response.data.models || response.data;
-
-          const mappedData = data.map((item) => ({
-            rank: item.rank,
-            teamname: item.hacker,
-            university: "SLIIT",
-            score: item.score,
-          }));
-
-          setLeaderboardData(mappedData);
-          setError(null);
-          setIsLoading(false);
-          return;
-        } catch (err) {
-          console.error(`Failed with proxy ${proxy}:`, err);
-        }
-      }
-
-      setError("Unable to fetch leaderboard data. Please try again later.");
-      setIsLoading(false);
-    };
-
-    fetchLeaderboardData();
-
-    const interval = setInterval(fetchLeaderboardData, REFRESH_INTERVAL);
-    return () => clearInterval(interval);
-  }, []);
-
-  const totalPages = Math.ceil(leaderboardData.length / ITEMS_PER_PAGE);
-  const paginatedData = leaderboardData.slice(
+  const paginatedData = data.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
 
-  const handlePageChange = (newPage) => {
+  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+
+  const handlePageChange = useCallback((newPage) => {
     setCurrentPage(newPage);
-  };
+  }, []);
 
   return (
     <div className="w-full flex flex-col justify-center items-center gap-6 mb-8 max-w-4xl mx-auto mt-9">
@@ -89,6 +45,11 @@ const Leaderboard = () => {
                   <LeaderboardCard key={item.rank} {...item} />
                 ))}
               </div>
+              {isValidating && (
+                <div className="text-orange-500 text-sm text-center mt-4">
+                  Updating...
+                </div>
+              )}
               <div className="flex justify-center mt-8">
                 <Pagination
                   currentPage={currentPage}
