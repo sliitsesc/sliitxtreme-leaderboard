@@ -25,19 +25,21 @@ export default function Navbar({ className }) {
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1 gap-x-4 text-[16px] font-medium">
             <li>
-              <a href="#home">Home</a>
+              <a href="https://sliitxtreme.ieeesliit.com/#home">Home</a>
             </li>
             <li>
-              <a href="#about">About</a>
+              <a href="https://sliitxtreme.ieeesliit.com/#about">About</a>
             </li>
             <li>
-              <a href="#prizes">Awards</a>
+              <a href="https://sliitxtreme.ieeesliit.com/#prizes">Awards</a>
             </li>
             <li>
-              <a href="#timeline">Timeline</a>
+              <a href="https://sliitxtreme.ieeesliit.com/#timeline">Timeline</a>
             </li>
             <li>
-              <a href="#organizers">Contact</a>
+              <a href="https://sliitxtreme.ieeesliit.com/#organizers">
+                Contact
+              </a>
             </li>
           </ul>
         </div>

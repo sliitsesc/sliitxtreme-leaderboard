@@ -1,7 +1,7 @@
 import React from "react";
 
 const LeaderboardCard = ({ rank, teamname, university, score }) => {
-  const hasContent = teamname && university && score && rank;
+  const hasContent = teamname && rank;
   const isTopThreeRanks = (rank) => {
     return rank === 1 || rank === 2 || rank === 3
       ? "drop-shadow-orange-glow bg-[#ef7226]"
