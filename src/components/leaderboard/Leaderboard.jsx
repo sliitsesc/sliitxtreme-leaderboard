@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import LeaderboardCard from "./LeaderboardCard";
 import Pagination from "../Pagination";
 import useLeaderboardData from "../../Hooks/useLeaderboardData";
@@ -21,7 +21,7 @@ const Leaderboard = () => {
   }, []);
 
   return (
-    <div className="w-full flex flex-col justify-center items-center gap-6 mb-8 max-w-4xl mx-auto mt-9">
+    <div className="w-full flex flex-col justify-center items-center gap-6 mb-8 max-w-4xl mx-auto mt-20">
       <div className="flex flex-col items-center gap-2 md:gap-1 mb-2 w-full">
         <h1 className="dm-sans-800 tracking-normal pointer-events-none text-4xl text-white py-2 px-4 w-full text-center relative">
           <span>The Leaderboard</span>

@@ -7,7 +7,7 @@ const REFRESH_INTERVAL = parseInt(import.meta.env.VITE_REFRESH_INTERVAL, 10);
 const CORS_PROXIES = import.meta.env.VITE_CORS_PROXIES.split(",");
 
 const CACHE_KEY = "leaderboardData";
-const CACHE_EXPIRATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_EXPIRATION = 1000; // 1 second
 
 const useLeaderboardData = () => {
   const [data, setData] = useState([]);
@@ -21,18 +21,42 @@ const useLeaderboardData = () => {
 
     for (const proxy of CORS_PROXIES) {
       try {
-        const response = await axios.get(
-          `${proxy}${encodeURIComponent(targetUrl)}`
-        );
+        const response = await axios.get(`${proxy}${targetUrl}`);
 
+        // Fetching data from response
         const fetchedData = response.data.models || response.data;
 
+        // Mapping the data with rank, teamname, and time_taken
         const mappedData = fetchedData.map((item) => ({
           rank: item.rank,
           teamname: item.hacker,
           university: "SLIIT",
           score: item.score,
+          time_taken: item.time_taken, // Assuming this field is present
         }));
+
+        // Sorting the data first by score, then by time_taken in ascending order
+        mappedData.sort((a, b) => {
+          if (a.rank === b.rank) {
+            return a.time_taken - b.time_taken;
+          }
+          return a.rank - b.rank;
+        });
+
+        // Assigning new ranks (No rank repetition unless rank and time_taken are equal)
+        let currentRank = 1;
+        for (let i = 0; i < mappedData.length; i++) {
+          if (
+            i > 0 &&
+            mappedData[i].rank === mappedData[i - 1].rank &&
+            mappedData[i].time_taken === mappedData[i - 1].time_taken
+          ) {
+            mappedData[i].rank = mappedData[i - 1].rank; // Same rank if both rank and time_taken are the same
+          } else {
+            mappedData[i].rank = currentRank; // Assign new rank
+          }
+          currentRank++;
+        }
 
         setData(mappedData);
         setError(null);
